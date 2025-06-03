@@ -11,11 +11,35 @@ import {
 import { useDropzone } from "react-dropzone";
 import { Button } from "./ui/button";
 import { UploadCloud } from "lucide-react";
+import { generatePresignedUrl } from "@/lib/s3";
 
 const UploadPdf = () => {
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log(acceptedFiles);
-  }, []);
+  const onDrop = (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+
+    processFile(file);
+  };
+
+  const processFile = async (file: File) => {
+    await uploadFile(file);
+  };
+
+  const uploadFile = async (file: File) => {
+    const { presignedUrl, fileKey } = await generatePresignedUrl(
+      file.name,
+      file.type
+    );
+
+    const response = await fetch(presignedUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type,
+      },
+      body: file,
+    });
+
+    console.log("File uploaded successfully:", response);
+  };
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
   return (
