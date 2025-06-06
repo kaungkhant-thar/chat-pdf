@@ -42,5 +42,6 @@ export const embedPdfToPipecone = async (fileKey: string) => {
   console.log("adding to pinecone index", process.env.PINECONE_INDEZ_NAME);
   await PineconeStore.fromDocuments(splitDocs, new OpenAIEmbeddings(), {
     pineconeIndex,
+    namespace: fileKey,
   });
 };

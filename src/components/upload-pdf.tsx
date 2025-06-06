@@ -13,6 +13,7 @@ import { Button } from "./ui/button";
 import { UploadCloud } from "lucide-react";
 import { generatePresignedUrl } from "@/lib/s3";
 import { embedPdfToPipecone } from "@/lib/pipecone";
+import { saveDocument } from "@/db/actions";
 
 const UploadPdf = () => {
   const onDrop = (acceptedFiles: File[]) => {
@@ -29,6 +30,13 @@ const UploadPdf = () => {
     await uploadFile(file, presignedUrl);
 
     await embedPdfToPipecone(fileKey);
+
+    await saveDocument({
+      fileName: file.name,
+      fileKey: fileKey,
+      fileSize: file.size,
+    });
+
     console.log("Done");
   };
 

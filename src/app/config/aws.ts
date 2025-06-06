@@ -8,7 +8,6 @@ const AwsEnvSchema = z.object({
 });
 
 const parsed = AwsEnvSchema.safeParse(process.env);
-console.log({ parsed });
 if (!parsed.success) {
   console.error("❌ Invalid AWS environment variables:");
   console.error(parsed.error.format());
