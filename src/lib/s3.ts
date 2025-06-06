@@ -17,7 +17,6 @@ export const generatePresignedUrl = async (
     ContentType: fileType,
   });
 
-  console.log({ putCommand });
   const presignedUrl = await getSignedUrl(s3Client, putCommand, {
     expiresIn: 60,
   });

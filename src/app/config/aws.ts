@@ -23,4 +23,5 @@ export const awsConfig = {
     accessKeyId: AWS_ACCESS_KEY_ID,
     secretAccessKey: AWS_SECRET_ACCESS_KEY,
   },
+  s3BucketName: process.env.AWS_S3_BUCKET_NAME,
 };
