@@ -5,12 +5,11 @@ import { CharacterTextSplitter } from "@langchain/textsplitters";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { PineconeStore } from "@langchain/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";
-import { awsConfig } from "@/app/config/aws";
+import { getS3FileUrl } from "./s3";
 
 export const embedPdfToPipecone = async (fileKey: string) => {
-  const response = await fetch(
-    `https://${awsConfig.s3BucketName}.s3.${awsConfig.region}.amazonaws.com/${fileKey}`
-  );
+  const fileUrl = await getS3FileUrl(fileKey);
+  const response = await fetch(fileUrl);
   const blob = await response.blob();
 
   const loader = new WebPDFLoader(blob);

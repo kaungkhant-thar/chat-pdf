@@ -23,3 +23,7 @@ export const generatePresignedUrl = async (
 
   return { presignedUrl, fileKey };
 };
+
+export async function getS3FileUrl(fileKey: string) {
+  return `https://${awsConfig.s3BucketName}.s3.${awsConfig.region}.amazonaws.com/${fileKey}`;
+}
