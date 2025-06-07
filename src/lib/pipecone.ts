@@ -5,12 +5,11 @@ import { CharacterTextSplitter } from "@langchain/textsplitters";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { PineconeStore } from "@langchain/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";
-import { awsConfig } from "@/app/config/aws";
+import { getS3FileUrl } from "./s3";
 
 export const embedPdfToPipecone = async (fileKey: string) => {
-  const response = await fetch(
-    `https://${awsConfig.s3BucketName}.s3.${awsConfig.region}.amazonaws.com/${fileKey}`
-  );
+  const fileUrl = await getS3FileUrl(fileKey);
+  const response = await fetch(fileUrl);
   const blob = await response.blob();
 
   const loader = new WebPDFLoader(blob);
@@ -37,9 +36,9 @@ export const embedPdfToPipecone = async (fileKey: string) => {
   const pinecone = new Pinecone({
     apiKey: process.env.PINECONE_API_KEY!,
   });
-  console.log("Pinecone initialized");
+
   const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEZ_NAME!);
-  console.log("adding to pinecone index", process.env.PINECONE_INDEZ_NAME);
+
   await PineconeStore.fromDocuments(splitDocs, new OpenAIEmbeddings(), {
     pineconeIndex,
     namespace: fileKey,
