@@ -7,7 +7,6 @@ const EnvSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
 });
 const parsed = EnvSchema.safeParse(process.env);
-console.log({ parsed });
 if (!parsed.success) {
   console.error("❌ Invalid Credentials variables:");
   console.error(parsed.error.format());

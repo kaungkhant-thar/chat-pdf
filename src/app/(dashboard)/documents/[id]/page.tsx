@@ -1,3 +1,4 @@
+import Chat from "@/components/chat";
 import PdfViewer from "@/components/pdf-viewer";
 import { getDocumentById } from "@/db/actions";
 import { getS3FileUrl } from "@/lib/s3";
@@ -11,6 +12,7 @@ const ChatPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   return (
     <div className=" flex">
       <PdfViewer fileUrl={fileUrl} />
+      <Chat document={document} />
     </div>
   );
 };

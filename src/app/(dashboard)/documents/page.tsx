@@ -5,7 +5,6 @@ import React from "react";
 
 const Documents = async () => {
   const documents = await getDocuments();
-  console.log("Documents:", documents);
   return (
     <div className=" max-w-4xl mx-auto p-10">
       Documents

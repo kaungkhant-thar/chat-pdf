@@ -55,7 +55,7 @@ const PdfViewer = ({ fileUrl }: { fileUrl: string }) => {
   });
 
   return (
-    <div className="basis-1/2 h-screen border rounded shadow">
+    <div className="basis-1/2 h-screen rounded ">
       <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
         <Viewer fileUrl={fileUrl} plugins={[defaultLayoutPluginInstance]} />
       </Worker>

@@ -1,8 +1,7 @@
 "use server";
-import { documentsTable } from "./schema";
+import { documentsTable, messagesTable } from "./schema";
 import { db } from ".";
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
 
 export const saveDocument = async ({
   fileKey,
@@ -32,11 +31,22 @@ export const getDocuments = async () => {
 };
 
 export const getDocumentById = async (id: string) => {
-  const document = await db
-    .select()
-    .from(documentsTable)
-    .where(eq(documentsTable.id, parseInt(id)));
+  const documentWithMessages = await db.query.documentsTable.findFirst({
+    where: (documents, { eq }) => eq(documents.id, parseInt(id)),
+    with: {
+      messages: true,
+    },
+  });
+  if (!documentWithMessages) {
+    throw new Error(`Document with id ${id} not found`);
+  }
+  return documentWithMessages;
+};
 
-  console.log("Document by ID:", document);
-  return document[0];
+export const saveMessage = async (
+  message: typeof messagesTable.$inferInsert
+) => {
+  const response = await db.insert(messagesTable).values(message);
+  console.log("Message saved:", response);
+  return response;
 };
