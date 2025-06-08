@@ -2,7 +2,6 @@ import { Book } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { Menu } from "../menu";
-import { Button } from "../ui/button";
 import { MobileDrawer } from "../drawer";
 
 const Header = () => {

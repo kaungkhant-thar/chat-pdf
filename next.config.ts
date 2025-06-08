@@ -2,12 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  experimental: {
-    turbo: {
-      resolveAlias: {
-        canvas: "./empty-module.ts",
-      },
-    },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.resolve.alias["canvas"] = false;
+    }
+    return config;
   },
 };
 
