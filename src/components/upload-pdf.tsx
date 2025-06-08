@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -14,30 +14,55 @@ import { UploadCloud } from "lucide-react";
 import { generatePresignedUrl } from "@/lib/s3";
 import { embedPdfToPipecone } from "@/lib/pipecone";
 import { saveDocument } from "@/db/actions";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-const UploadPdf = () => {
+const UploadPdf = ({ numOfDocuments }: { numOfDocuments: number }) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const onDrop = (acceptedFiles: File[]) => {
+    if (numOfDocuments >= 3) {
+      toast.error("You can only upload up to 3 documents.");
+      setIsDialogOpen(false);
+      return;
+    }
     const file = acceptedFiles[0];
-
     processFile(file);
   };
 
   const processFile = async (file: File) => {
-    const { presignedUrl, fileKey } = await generatePresignedUrl(
-      file.name,
-      file.type
-    );
-    await uploadFile(file, presignedUrl);
+    setIsUploading(true);
+    setIsComplete(false);
 
-    await embedPdfToPipecone(fileKey);
+    try {
+      const { presignedUrl, fileKey } = await generatePresignedUrl(
+        file.name,
+        file.type
+      );
 
-    await saveDocument({
-      fileName: file.name,
-      fileKey: fileKey,
-      fileSize: file.size,
-    });
+      await uploadFile(file, presignedUrl);
 
-    console.log("Done");
+      await embedPdfToPipecone(fileKey);
+
+      await saveDocument({
+        fileName: file.name,
+        fileKey: fileKey,
+        fileSize: file.size,
+      });
+
+      setIsComplete(true);
+      console.log("Done");
+
+      setTimeout(() => {
+        setIsDialogOpen(false);
+      }, 400);
+    } catch (error) {
+      console.error("Error during file processing", error);
+      setIsUploading(false);
+      setIsComplete(false);
+    }
   };
 
   const uploadFile = async (file: File, presignedUrl: string) => {
@@ -49,14 +74,18 @@ const UploadPdf = () => {
       body: file,
     });
 
-    console.log("File uploaded successfully:", response);
+    console.log("Response from S3 upload:", response);
   };
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: { "application/pdf": [".pdf"] },
+  });
+
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button>UploadPdf</Button>
+        <Button>Upload PDF</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -67,10 +96,23 @@ const UploadPdf = () => {
             className="flex flex-col items-center border-dashed border-2 border-gray-300 p-6 rounded-lg text-center"
           >
             <input {...getInputProps()} />
+            <UploadCloud className="text-primary" />
+            <p>Drag and drop a PDF file here or click</p>
 
-            <UploadCloud />
+            {/* Loading Spinner */}
+            {isUploading && !isComplete && (
+              <div className="mt-4 flex flex-col items-center">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                <p className="text-sm text-gray-500">Uploading...</p>
+              </div>
+            )}
 
-            <p>Drag and drop a PDF file here or click </p>
+            {/* Success Message */}
+            {isComplete && (
+              <div className="mt-4 text-green-500">
+                <p>Upload complete! The document is ready for processing.</p>
+              </div>
+            )}
           </div>
         </DialogHeader>
       </DialogContent>
