@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,11 +11,46 @@ import {
 import { useDropzone } from "react-dropzone";
 import { Button } from "./ui/button";
 import { UploadCloud } from "lucide-react";
+import { generatePresignedUrl } from "@/lib/s3";
+import { embedPdfToPipecone } from "@/lib/pipecone";
+import { saveDocument } from "@/db/actions";
 
 const UploadPdf = () => {
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log(acceptedFiles);
-  }, []);
+  const onDrop = (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+
+    processFile(file);
+  };
+
+  const processFile = async (file: File) => {
+    const { presignedUrl, fileKey } = await generatePresignedUrl(
+      file.name,
+      file.type
+    );
+    await uploadFile(file, presignedUrl);
+
+    await embedPdfToPipecone(fileKey);
+
+    await saveDocument({
+      fileName: file.name,
+      fileKey: fileKey,
+      fileSize: file.size,
+    });
+
+    console.log("Done");
+  };
+
+  const uploadFile = async (file: File, presignedUrl: string) => {
+    const response = await fetch(presignedUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type,
+      },
+      body: file,
+    });
+
+    console.log("File uploaded successfully:", response);
+  };
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
   return (
