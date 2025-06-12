@@ -63,7 +63,7 @@ const Chat = ({
                   <Bot className="rounded-sm p-1" />
                 )}
               </div>
-              <div className="text-sm font-light leading-7 break-words ">
+              <div>
                 <MessageContent content={message.content} />
               </div>
             </div>
