@@ -7,6 +7,7 @@ import { Input } from "./ui/input";
 import { Bot, Loader2, Send, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
+import { MessageContent } from "./ui/message-content";
 
 const Chat = ({
   document,
@@ -41,6 +42,7 @@ const Chat = ({
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
 
+  console.log({ chatMessages });
   return (
     <div className="basis-1/2 h-[calc(100dvh)] flex flex-col">
       {/* Message list */}
@@ -61,8 +63,8 @@ const Chat = ({
                   <Bot className="rounded-sm p-1" />
                 )}
               </div>
-              <div className="text-sm font-light leading-7 break-words whitespace-pre-wrap">
-                {message.content}
+              <div className="text-sm font-light leading-7 break-words ">
+                <MessageContent content={message.content} />
               </div>
             </div>
           ))}
