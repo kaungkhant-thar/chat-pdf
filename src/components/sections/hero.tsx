@@ -5,8 +5,6 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 
-const ease = [0.16, 1, 0.3, 1];
-
 const HeroPill = () => {
   return (
     <motion.a
@@ -14,7 +12,7 @@ const HeroPill = () => {
       className="flex w-auto space-x-2 bg-primary/20 items-center px-2 py-2 ring-1 ring-accent whitespace-pre rounded-full"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease }}
+      transition={{ ease: "easeOut" }}
       whileHover={{ scale: 1.05 }}
     >
       <div className="w-fit rounded-full bg-accent px-2 py-0.5 text-center text-xs font-medium text-primary sm:text-sm">
@@ -37,7 +35,6 @@ const HeroTitles = () => {
         animate={{ filter: "blur(0px)", opacity: 1 }}
         transition={{
           duration: 1,
-          ease,
           staggerChildren: 0.2,
         }}
       >
@@ -50,7 +47,6 @@ const HeroTitles = () => {
             transition={{
               duration: 0.8,
               delay: index * 0.2,
-              ease,
             }}
           >
             {word}
@@ -61,7 +57,7 @@ const HeroTitles = () => {
         className="text-center text-lg font-light leading-relaxed text-foreground/80 sm:text-xl md:text-2xl"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease, delay: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut", delay: 1 }}
       >
         ChatPDF is a free, open-source web app that allows you to chat with any
         PDF document using AI. It&apos;s built with Next.js, TypeScript, and
@@ -77,7 +73,7 @@ const HeroCTA = () => {
       className="flex justify-center pt-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease, delay: 1.2 }}
+      transition={{ duration: 0.8, ease: "easeOut", delay: 1.2 }}
     >
       <Button asChild>
         <Link href="/documents">Get Started</Link>
